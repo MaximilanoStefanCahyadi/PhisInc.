@@ -35,8 +35,7 @@ st.markdown("""
 # Load model
 @st.cache_resource
 def load_model():
-    st.write("Working dir:", os.getcwd())
-    st.write("Files here:", os.listdir())
+
     try:
         with open('gradient_boosting_model.pkl', 'rb') as file:
             model = pickle.load(file)
@@ -46,6 +45,8 @@ def load_model():
         return None
     except Exception as e:
         st.error(f"❌ Error loading model: {str(e)}")
+        st.error("Working dir:", os.getcwd())
+        st.error("Files here:", os.listdir())
         return None
 
 # Header
