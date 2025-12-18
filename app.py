@@ -3,6 +3,9 @@ import pickle
 import numpy as np
 from featureextraction import FeatureExtraction
 import time
+import os
+import streamlit as st
+
 
 # Konfigurasi halaman
 st.set_page_config(
@@ -32,6 +35,8 @@ st.markdown("""
 # Load model
 @st.cache_resource
 def load_model():
+    st.write("Working dir:", os.getcwd())
+    st.write("Files here:", os.listdir())
     try:
         with open('gradient_boosting_model.pkl', 'rb') as file:
             model = pickle.load(file)
