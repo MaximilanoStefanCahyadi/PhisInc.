@@ -5,6 +5,7 @@ from featureextraction import FeatureExtraction
 import time
 import os
 import streamlit as st
+import joblib
 
 
 # Konfigurasi halaman
@@ -38,15 +39,13 @@ def load_model():
 
     try:
         with open('gradient_boosting_model.pkl', 'rb') as file:
-            model = pickle.load(file)
+            model = joblib.load(file)
         return model
     except FileNotFoundError:
         st.error("❌ Model file 'gradient_boosting_model.pkl' tidak ditemukan!")
         return None
     except Exception as e:
         st.error(f"❌ Error loading model: {str(e)}")
-        st.error("Working dir:", os.getcwd())
-        st.error("Files here:", os.listdir())
         return None
 
 # Header
