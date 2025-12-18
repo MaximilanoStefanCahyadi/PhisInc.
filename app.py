@@ -7,12 +7,6 @@ import os
 import streamlit as st
 import joblib
 
-import sys, os
-st.write("Python:", sys.version)
-st.write("CWD:", os.getcwd())
-st.write("Files:", os.listdir())
-
-
 # Konfigurasi halaman
 st.set_page_config(
     page_title="Phishing URL Detection",
