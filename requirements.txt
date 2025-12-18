@@ -1,0 +1,10 @@
+streamlit
+numpy
+pandas
+scikit-learn
+matplotlib
+seaborn
+pillow
+requests
+beautifulsoup4
+lxml
