@@ -7,6 +7,11 @@ import os
 import streamlit as st
 import joblib
 
+import sys, os
+st.write("Python:", sys.version)
+st.write("CWD:", os.getcwd())
+st.write("Files:", os.listdir())
+
 
 # Konfigurasi halaman
 st.set_page_config(
@@ -34,12 +39,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Load model
-@st.cache_resource
+# @st.cache_resource
 def load_model():
 
     try:
-        with open('gradient_boosting_model.pkl', 'rb') as file:
-            model = joblib.load(file)
+        model = joblib.load("gradient_boosting_model.pkl")
         return model
     except FileNotFoundError:
         st.error("❌ Model file 'gradient_boosting_model.pkl' tidak ditemukan!")
