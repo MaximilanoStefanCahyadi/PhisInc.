@@ -4,7 +4,6 @@ import numpy as np
 from featureextraction import FeatureExtraction
 import time
 import os
-import streamlit as st
 import joblib
 
 # Konfigurasi halaman
@@ -16,26 +15,17 @@ st.set_page_config(
 
 # Custom CSS untuk styling
 st.markdown("""
-    <style>
-    .main {
-        padding: 2rem;
+<style>
+    .stButton>button {
+        width: 100%;
+        margin-top: 27px;
     }
-    .stAlert {
-        margin-top: 1rem;
-    }
-    .feature-box {
-        background-color: #f0f2f6;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin: 0.5rem 0;
-    }
-    </style>
+</style>
 """, unsafe_allow_html=True)
 
 # Load model
-# @st.cache_resource
+@st.cache_resource
 def load_model():
-
     try:
         model = joblib.load("gradient_boosting_model.pkl")
         return model
@@ -50,8 +40,8 @@ def load_model():
 st.title("🔒 Phishing URL Detection System")
 st.markdown("---")
 st.markdown("""
-    Sistem ini menggunakan **Machine Learning** untuk mendeteksi apakah sebuah URL adalah phishing atau legitimate.
-    Masukkan URL yang ingin Anda periksa di bawah ini.
+Sistem ini menggunakan **Machine Learning** untuk mendeteksi apakah sebuah URL adalah phishing atau legitimate.
+Masukkan URL yang ingin Anda periksa di bawah ini.
 """)
 
 # Sidebar
@@ -60,7 +50,6 @@ with st.sidebar:
     st.markdown("""
     ### Tentang Aplikasi
     Aplikasi ini menganalisis **30 fitur** dari URL untuk mendeteksi phishing:
-    
     - **Fitur URL**: Panjang, karakter khusus, dll
     - **Fitur Domain**: Usia, registrasi, DNS
     - **Fitur HTML**: Form, script, iframe
@@ -68,30 +57,30 @@ with st.sidebar:
     
     ### Cara Penggunaan
     1. Masukkan URL lengkap (dengan http/https)
-    2. Klik tombol "Analisis URL"
+    2. Tekan **Enter** atau klik tombol "Analisis URL"
     3. Lihat hasil prediksi
     """)
-    
     st.markdown("---")
     st.markdown("**Model**: Gradient Boosting Classifier")
 
-# Main content
-col1, col2 = st.columns([2, 1])
-
-with col1:
-    url_input = st.text_input(
-        "🌐 Masukkan URL",
-        placeholder="https://example.com",
-        help="Masukkan URL lengkap yang ingin dianalisis"
-    )
-
-with col2:
-    st.markdown("<br>", unsafe_allow_html=True)
-    analyze_button = st.button("🔍 Analisis URL", type="primary", use_container_width=True)
+# Main content - Gunakan form untuk menangkap Enter key
+with st.form(key='url_form', clear_on_submit=False):
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        url_input = st.text_input(
+            "🌐 Masukkan URL",
+            placeholder="https://example.com",
+            help="Masukkan URL lengkap yang ingin dianalisis"
+        )
+    
+    with col2:
+        analyze_button = st.form_submit_button("🔍 Analisis URL", type="primary", use_container_width=True)
 
 # Load model
 model = load_model()
 
+# Proses analisis ketika form di-submit (baik dengan Enter atau klik tombol)
 if analyze_button and url_input:
     if model is None:
         st.error("Model tidak dapat dimuat. Pastikan file 'gradient_boosting_model.pkl' ada di direktori yang sama.")
@@ -149,22 +138,21 @@ if analyze_button and url_input:
                 
                 # Detail hasil
                 st.markdown("---")
-                
                 if prediction == 1:
                     st.success("### ✅ URL INI KEMUNGKINAN AMAN (LEGITIMATE)")
                     st.info(f"""
-                    **Probabilitas Legitimate**: {probability[1]*100:.2f}%  
-                    **Probabilitas Phishing**: {probability[0]*100:.2f}%
-                    
-                    URL ini memiliki karakteristik yang mirip dengan website legitimate.
+**Probabilitas Legitimate**: {probability[1]*100:.2f}%  
+**Probabilitas Phishing**: {probability[0]*100:.2f}%
+
+URL ini memiliki karakteristik yang mirip dengan website legitimate.
                     """)
                 else:
                     st.error("### ⚠️ PERINGATAN: URL INI TERDETEKSI SEBAGAI PHISHING!")
                     st.warning(f"""
-                    **Probabilitas Phishing**: {probability[0]*100:.2f}%  
-                    **Probabilitas Legitimate**: {probability[1]*100:.2f}%
-                    
-                    **Jangan** memasukkan informasi pribadi, password, atau data sensitif di website ini!
+**Probabilitas Phishing**: {probability[0]*100:.2f}%  
+**Probabilitas Legitimate**: {probability[1]*100:.2f}%
+
+**Jangan** memasukkan informasi pribadi, password, atau data sensitif di website ini!
                     """)
                 
                 # Tampilkan fitur dalam expander
@@ -173,10 +161,11 @@ if analyze_button and url_input:
                         "Using IP Address", "Long URL", "Short URL", "Symbol @",
                         "Redirecting //", "Prefix Suffix", "Sub Domains", "HTTPS",
                         "Domain Registration Length", "Favicon", "Non-Standard Port",
-                        "HTTPS in Domain", "Request URL", "Anchor URL", "Links in Script Tags",
-                        "Server Form Handler", "Info Email", "Abnormal URL", "Website Forwarding",
-                        "Status Bar Customization", "Disable Right Click", "Using Popup Window",
-                        "Iframe Redirection", "Age of Domain", "DNS Recording", "Website Traffic",
+                        "HTTPS in Domain", "Request URL", "Anchor URL",
+                        "Links in Script Tags", "Server Form Handler", "Info Email",
+                        "Abnormal URL", "Website Forwarding", "Status Bar Customization",
+                        "Disable Right Click", "Using Popup Window", "Iframe Redirection",
+                        "Age of Domain", "DNS Recording", "Website Traffic",
                         "PageRank", "Google Index", "Links Pointing to Page", "Stats Report"
                     ]
                     
@@ -202,8 +191,8 @@ elif analyze_button and not url_input:
 # Footer
 st.markdown("---")
 st.markdown("""
-    <div style='text-align: center; color: #666;'>
-        <p>🔒 Phishing Detection System | Powered by Machine Learning</p>
-        <p style='font-size: 0.8rem;'>Selalu verifikasi URL sebelum memasukkan data sensitif</p>
-    </div>
+<div style='text-align: center; color: #666; padding: 20px;'>
+    🔒 <b>Phishing Detection System</b> | Powered by Machine Learning<br>
+    <small>Selalu verifikasi URL sebelum memasukkan data sensitif</small>
+</div>
 """, unsafe_allow_html=True)
